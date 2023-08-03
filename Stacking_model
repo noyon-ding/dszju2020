@@ -1,0 +1,265 @@
+# 
+import numpy as np
+from numpy import arange
+from matplotlib import pyplot
+import pandas as pd
+from pandas import  set_option
+from pandas.plotting import scatter_matrix
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import Pipeline
+
+#
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.svm import SVR
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.ensemble import RandomForestRegressor
+
+#
+from mlxtend.regressor import StackingRegressor
+from mlxtend.regressor import StackingCVRegressor
+
+#
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_absolute_error
+
+# Import Data
+dataset = pd.read_csv("E:\\exercise\\202109-12\\kitchen waste.csv", encoding = 'gbk', index_col=0)
+dataset.head()
+
+# Separate datasets
+array = dataset.values
+X = array[:, 0:10]
+Y = array[:, 10]
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y,test_size=0.3, random_state=7)
+
+# Evaluation means
+num_folds = 5
+scoring1 = 'neg_mean_squared_error'
+scoring2 = 'r2'
+scoring1 = 'mean_absolute_error'
+
+#LR model
+scaler = StandardScaler().fit(X_train)
+rescaledX = scaler.transform(X_train)
+lr = LinearRegression()
+lr.fit(rescaledX, Y_train)
+
+# Evaluate the training set
+rescaledX_train = scaler.transform(X_train)
+pre_train = lr.predict(rescaledX_train)
+print('Training_data，MSE：%s' % (mean_squared_error(Y_train, pre_train)))
+print('Training_data，MAE：%s' % (mean_absolute_error(Y_train, pre_train)))
+print('Training_data，R2：%s' %  (r2_score(Y_train, pre_train)))
+
+# Evaluate the testing set
+rescaledX_test = scaler.transform(X_test)
+pre_test = lr.predict(rescaledX_test)
+print('Testing_data，MSE：%s' % (mean_squared_error(Y_test, pre_test)))
+print('Testing_data，MAE：%s' % (mean_absolute_error(Y_test, pre_test)))
+print('Testing_data，R2：%s' % (r2_score(Y_test, pre_test)))
+
+#Data saving-LR
+#training set - true value
+trainLR = pd.DataFrame(data = Y_train)
+trainLR.to_csv('E:\1108LR_train.csv')
+#training set - Predictive value
+pretrainLR = pd.DataFrame(data = pre_train)
+pretrainLR.to_csv('E:\1108LR_predictions_train.csv')
+
+#testing set - true value
+testLR = pd.DataFrame(data = Y_test)
+testLR.to_csv('E:\1108LR_test.csv')
+#testing set - Predictive value
+pretestLR = pd.DataFrame(data = pre_test)
+pretestLR.to_csv('E:\1108LR_predictions_test.csv')
+
+#KNN model
+scaler = StandardScaler().fit(X_train)
+rescaledX = scaler.transform(X_train)
+knn= KNeighborsRegressor(n_neighbors = 3)
+knn.fit(rescaledX, Y_train)
+
+# Evaluate the training set
+rescaledX_train = scaler.transform(X_train)
+pre_train = knn.predict(rescaledX_train)
+print('Training_data，MSE：%s' % (mean_squared_error(Y_train, pre_train)))
+print('Training_data，MAE：%s' % (mean_absolute_error(Y_train, pre_train)))
+print('Training_data，R2：%s' %  (r2_score(Y_train, pre_train)))
+
+# Evaluate the testing set
+rescaledX_test = scaler.transform(X_test)
+pre_test = knn.predict(rescaledX_test)
+print('Testing_data，MSE：%s' % (mean_squared_error(Y_test, pre_test)))
+print('Testing_data，MAE：%s' % (mean_absolute_error(Y_test, pre_test)))
+print('Testing_data，R2：%s' % (r2_score(Y_test, pre_test)))
+
+#Data saving-KNN
+#training set - true value
+trainKNN = pd.DataFrame(data = Y_train)
+trainKNN.to_csv('E:\1108KNN_train.csv')
+#training set - Predictive value
+pretrainKNN = pd.DataFrame(data = pre_train)
+pretrainKNN.to_csv('E:\1108KNN_predictions_train.csv')
+
+#testing set - true value
+testKNN = pd.DataFrame(data = Y_test)
+testKNN.to_csv('E:\1108KNN_test.csv')
+#testing set - Predictive value
+pretestKNN = pd.DataFrame(data = pre_test)
+pretestKNN.to_csv('E:\1108KNN_predictions_test.csv')
+
+#Model-DT
+scaler = StandardScaler().fit(X_train)
+rescaledX = scaler.transform(X_train)
+dt= DecisionTreeRegressor(max_depth= 19, min_samples_leaf= 1, min_samples_split= 10)
+dt.fit(rescaledX, Y_train)
+
+# Evaluate the training set
+rescaledX_train = scaler.transform(X_train)
+pre_train = dt.predict(rescaledX_train)
+print('Training_data，MSE：%s' % (mean_squared_error(Y_train, pre_train)))
+print('Training_data，MAE：%s' % (mean_absolute_error(Y_train, pre_train)))
+print('Training_data，R2：%s' %  (r2_score(Y_train, pre_train)))
+
+# Evaluate the testing set
+rescaledX_test = scaler.transform(X_test)
+pre_test = dt.predict(rescaledX_test)
+print('Testing_data，MSE：%s' % (mean_squared_error(Y_test, pre_test)))
+print('Testing_data，MAE：%s' % (mean_absolute_error(Y_test, pre_test)))
+print('Testing_data，R2：%s' % (r2_score(Y_test, pre_test)))
+
+#Data saving-DT
+#training set - true value
+trainDT = pd.DataFrame(data = Y_train)
+trainDT.to_csv('E:\DT_train.csv')
+#training set - Predictive value
+pretrainDT = pd.DataFrame(data = pre_train)
+pretrainDT.to_csv('E:\DT_predictions_train.csv')
+
+#testing set - true value
+testDT = pd.DataFrame(data = Y_test)
+testDT.to_csv('E:\DT_test.csv')
+#testing set - Predictive value
+pretestDT = pd.DataFrame(data = pre_test)
+pretestDT.to_csv('E:\DT_predictions_test.csv')
+
+#SVR model
+scaler = StandardScaler().fit(X_train)
+rescaledX = scaler.transform(X_train)
+svr= SVR(kernel = 'linear')
+svr.fit(rescaledX, Y_train)
+
+# Evaluate the training set
+rescaledX_train = scaler.transform(X_train)
+pre_train = svr.predict(rescaledX_train)
+print('Training_data，MSE：%s' % (mean_squared_error(Y_train, pre_train)))
+print('Training_data，MAE：%s' % (mean_absolute_error(Y_train, pre_train)))
+print('Training_data，R2：%s' %  (r2_score(Y_train, pre_train)))
+
+# Evaluate the testing set
+rescaledX_test = scaler.transform(X_test)
+pre_test = svr.predict(rescaledX_test)
+print('Testing_data，MSE：%s' % (mean_squared_error(Y_test, pre_test)))
+print('Testing_data，MAE：%s' % (mean_absolute_error(Y_test, pre_test)))
+print('Testing_data，R2：%s' % (r2_score(Y_test, pre_test)))
+
+#Data saving-SVR
+#training set - true value
+trainSVR = pd.DataFrame(data = Y_train)
+trainSVR.to_csv('E:\SVR_train.csv')
+#training set - Predictive value
+pretrainSVR = pd.DataFrame(data = pre_train)
+pretrainSVR.to_csv('E:\SVR_predictions_train.csv')
+
+#testing set - true value
+testSVR = pd.DataFrame(data = Y_test)
+testSVR.to_csv('E:\SVR_test.csv')
+#testing set - Predictive value
+pretestSVR = pd.DataFrame(data = pre_test)
+pretestSVR.to_csv('E:\SVR_predictions_test.csv')
+
+#RF model
+scaler = StandardScaler().fit(X_train)
+rescaledX = scaler.transform(X_train)
+rf= RandomForestRegressor(n_estimators=700)
+rf.fit(rescaledX, Y_train)
+
+# Evaluate the training set
+rescaledX_train = scaler.transform(X_train)
+pre_train = rf.predict(rescaledX_train)
+print('Training_data，MSE：%s' % (mean_squared_error(Y_train, pre_train)))
+print('Training_data，MAE：%s' % (mean_absolute_error(Y_train, pre_train)))
+print('Training_data，R2：%s' %  (r2_score(Y_train, pre_train)))
+
+# Evaluate the testing set
+rescaledX_test = scaler.transform(X_test)
+pre_test = rf.predict(rescaledX_test)
+print('Testing_data，MSE：%s' % (mean_squared_error(Y_test, pre_test)))
+print('Testing_data，MAE：%s' % (mean_absolute_error(Y_test, pre_test)))
+print('Testing_data，R2：%s' % (r2_score(Y_test, pre_test)))
+
+#Data saving-RF
+#training set - true value
+train = pd.DataFrame(data = Y_train)
+train.to_csv('E:\RF_train.csv')
+
+#training set - Predictive value
+pretrainRF = pd.DataFrame(data = pre_train)
+pretrainRF.to_csv('E:\RF_predictions_train.csv')
+
+#testing set - true value
+testRF = pd.DataFrame(data = Y_test)
+testRF.to_csv('E:\RF_test.csv')
+#testing set - Predictive value
+pretestRF = pd.DataFrame(data = pre_test)
+pretestRF.to_csv('E:\RFredictions_test.csv')
+
+#Stacking model
+models = [knn,dt,rf]
+sclf = StackingCVRegressor(regressors=models, meta_regressor=lr)
+
+#fit stacking model
+scaler = StandardScaler().fit(X_train)
+rescaledX = scaler.transform(X_train)
+sclf = StackingCVRegressor(regressors=models, meta_regressor=lr)
+sclf.fit(rescaledX, Y_train)
+
+# Evaluate the training set
+rescaledX_train = scaler.transform(X_train)
+pre_train = sclf.predict(rescaledX_train)
+print('Training_data，MSE：%s' % (mean_squared_error(Y_train, pre_train)))
+print('Training_data，MAE：%s' % (mean_absolute_error(Y_train, pre_train)))
+print('Training_data，R2：%s' %  (r2_score(Y_train, pre_train)))
+
+# Evaluate the testing set
+rescaledX_test = scaler.transform(X_test)
+pre_test = sclf.predict(rescaledX_test)
+print('Testing_data，MSE：%s' % (mean_squared_error(Y_test, pre_test)))
+print('Testing_data，MAE：%s' % (mean_absolute_error(Y_test, pre_test)))
+print('Testing_data，R2：%s' % (r2_score(Y_test, pre_test)))
+
+#Data saving-Stacking
+#training set - true value
+trainSt = pd.DataFrame(data = Y_train)
+trainSt.to_csv('E:\st_train.csv')
+#training set - Predictive value
+pretrainSt = pd.DataFrame(data = pre_train)
+pretrainSt.to_csv('E:\st_predictions_train.csv')
+
+#testing set - true value
+testSt = pd.DataFrame(data = Y_test)
+testSt.to_csv('E:\st_test.csv')
+#testing set - Predictive value
+pretestSt = pd.DataFrame(data = pre_test)
+pretestSt.to_csv('E:\st_predictions_test.csv')
+
+#save model
+import joblib as jl
+jl.dump(sclf, 'D:\stacking_model.sav')
+print('This model has been saved')
