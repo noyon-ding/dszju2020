@@ -29,7 +29,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.metrics import mean_absolute_error
 
 # Import Data
-dataset = pd.read_csv("E:\\exercise\\202109-12\\kitchen waste.csv", encoding = 'gbk', index_col=0)
+dataset = pd.read_csv("xxxxx", encoding = 'gbk', index_col=0)
 dataset.head()
 
 # Separate datasets
@@ -117,7 +117,7 @@ pretestKNN.to_csv('E:\1108KNN_predictions_test.csv')
 #Model-DT
 scaler = StandardScaler().fit(X_train)
 rescaledX = scaler.transform(X_train)
-dt= DecisionTreeRegressor(max_depth= 19, min_samples_leaf= 1, min_samples_split= 10)
+dt= DecisionTreeRegressor(max_depth= 19, min_samples_leaf= 11, min_samples_split= 10)
 dt.fit(rescaledX, Y_train)
 
 # Evaluate the training set
